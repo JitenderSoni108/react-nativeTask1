@@ -14,40 +14,25 @@ export default function LoginScreen({ navigation }) {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [userInfo, setUserInfo] = useState(null); 
 
   const handlePress = async () => {
     setLoading(true);
     try {
       const response = await axios.post(
         'https://ecomm.vergocrm.com/api/Token',
-        { grant_type: 'password', username, password },
+        {
+          grant_type: 'password',
+          username,
+          password,
+        },
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
       );
-
       if (response.status === 200) {
         const token = response.data.access_token;
-
-        const userResponse = await axios.get(
-          'https://ecomm.vergocrm.com/api/en/user/info/',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (userResponse.status === 200) {
-          const userData = userResponse.data; 
-          setUserInfo(userData); 
-
-          navigation.navigate('Home', { user: userData });
-        } else {
-          Alert.alert('Error', 'Failed to fetch user information.');
+          navigation.navigate('Home', { tokens : token , status : response.status});
         }
-      } else {
-        Alert.alert('Error', 'Invalid username or password.');
+      else {
+        Alert.alert('Failed', 'Invalid username and password');
       }
     } catch (error) {
       console.error('API Error:', error);
@@ -58,58 +43,102 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter username"
-        onChangeText={setUserName}
-        value={username}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Enter password"
-        onChangeText={setPassword}
-        value={password}
-        secureTextEntry
-      />
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <TouchableOpacity style={styles.button} onPress={handlePress}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-      )}
+    <View style={styles.main}>
+      <View style={styles.container}>
+        <Text style={styles.headText}>Welcome Back!</Text>
+        <Text style={styles.subText}>Login to continue</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Username"
+          placeholderTextColor="#aaa"
+          onChangeText={setUserName}
+          value={username}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Password"
+          placeholderTextColor="#aaa"
+          onChangeText={setPassword}
+          value={password}
+          secureTextEntry
+        />
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#1976D2" />
+        ) : (
+          <TouchableOpacity style={styles.button} onPress={handlePress}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        )}
+
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  main: {
     flex: 1,
+    backgroundColor: '#E3F2FD',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#f5f5f5',
   },
-  text: { fontSize: 18, marginBottom: 20 },
+  container: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    width: 350,
+    borderRadius: 15,
+    alignItems: 'center',
+    elevation: 10, 
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
+  headText: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#0D47A1',
+    marginBottom: 5,
+  },
+  subText: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 20,
+  },
   input: {
+    width: '100%',
+    height: 50,
     borderWidth: 1,
-    width: '80%',
-    height: 40,
-    borderColor: 'gray',
-    marginBottom: 10,
-    paddingLeft: 8,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    backgroundColor: '#F9F9F9',
+    marginBottom: 15,
   },
   button: {
-    width: '80%',
-    backgroundColor: 'red',
-    padding: 10,
-    marginTop: 10,
-    borderRadius: 5,
+    backgroundColor: '#1976D2',
+    paddingVertical: 12,
+    width: '100%',
+    borderRadius: 8,
     alignItems: 'center',
+    marginTop: 10,
+    elevation: 5,
   },
-  buttonText: { color: 'white', fontSize: 16 },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  footerText: {
+    marginTop: 15,
+    fontSize: 14,
+    color: '#555',
+  },
+  linkText: {
+    color: '#1976D2',
+    fontWeight: 'bold',
+  },
 });

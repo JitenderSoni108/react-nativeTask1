@@ -20,7 +20,7 @@
           <Stack.Screen 
             name="Home" 
             component={HomeScreen} 
-            options={{ headerBackVisible: true }} // Hide back button
+            options={{ headerBackVisible: true }} 
           />
 
           <Stack.Screen 
